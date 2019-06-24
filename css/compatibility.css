@@ -2,8 +2,6 @@ body{
     background: silver;
 }
 .box-one{
-    width: 100px;
-    height: 100px;
+    padding-right:10px;
     background: rosybrown;
-
 }
