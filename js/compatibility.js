@@ -29,3 +29,16 @@ document.onclick = function (e) {
         console.log("Outer");
     }
 }
+//4.闭包
+function w(a){
+    var sum=0;
+    var all=0;
+    return function (b){
+        sum=a+b;
+        return function(c){
+            all=sum*c;
+            console.log("all",all);
+        }
+    }
+}
+w(1)(5)(9);
