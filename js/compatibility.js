@@ -103,24 +103,60 @@
 // console.log("stuu",stuu);
 
 //8.Object.defineProperty
-var book={
-  _year:2004,
-  edition:1
+// var book={
+//   _year:2004,
+//   edition:1
+// }
+// // var book={}
+// Object.defineProperty(book,"_year",{
+//   // configurable:true,
+//   // writable:true,
+//   // value:2004
+//   get:function(){
+//     return this._year;
+//   },
+//   set:function(newValue){
+//     if(newValue>2019){
+//       this.edition=2;
+//     }
+//   }
+// })
+// book.year=2029;
+// console.log("---",book);
+//9.原型对象 输出结果
+// function Foo() {
+//   getName = function () { alert(1) };
+//   return this;
+// }
+// Foo.getName = function () { alert(2) };
+// Foo.prototype.getName = function () { alert(3) };
+// var getName = function () { alert(4) };
+// function getName() { alert(5) };
+// //请写出一下输出结果
+// Foo.getName();
+// getName();
+// Foo().getName();
+// getName();
+// new Foo.getName();
+// new Foo.getName();
+// new new Foo().getName();
+//删除数组内容
+// var arr=[1,2,3];
+// delete arr[2];
+// console.log(arr);
+//10.继承
+function Animal(name){
+  this.name=name;
+  
 }
-// var book={}
-Object.defineProperty(book,"_year",{
-  // configurable:true,
-  // writable:true,
-  // value:2004
-  get:function(){
-    return this._year;
-  },
-  set:function(newValue){
-    if(newValue>2019){
-      this.edition=2;
-    }
+Animal.prototype={
+  sayName:function(word){
+    console.log(this,word);
   }
-})
-book.year=2029;
-console.log("---",book);
-
+}
+var dog=new Animal("狗狗");
+var cat=new Animal("猫猫");
+dog.name="旺旺"
+console.log("dog",dog.__proto__);
+console.log("dog",dog.__proto__);
+// Animal("猫猫").sayName();//this指向全局 name为undefined
