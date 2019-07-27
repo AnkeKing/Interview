@@ -128,14 +128,16 @@
 //   getName = function () { alert(1) };
 //   return this;
 // }
-// Foo.getName = function () { alert(2) };
-// Foo.prototype.getName = function () { alert(3) };
-// var getName = function () { alert(4) };
-// function getName() { alert(5) };
-// //请写出一下输出结果
-// Foo.getName();
-// getName();
-// Foo().getName();
+// Foo.getName = function () { alert(2) };//静态方法
+// Foo.prototype.getName = function () { alert(3) };//实例方法 要通过new调用
+// var getName = function () { alert(4) };//全局方法
+// function getName() { alert(5) };//全局方法
+//请写出一下输出结果
+// Foo.getName();  //2
+// getName();      //4
+// console.log("----前",this)
+// Foo().getName();//1
+// console.log("----后",this)
 // getName();
 // new Foo.getName();
 // new Foo.getName();
@@ -145,18 +147,133 @@
 // delete arr[2];
 // console.log(arr);
 //10.继承
-function Animal(name){
-  this.name=name;
-  
+// function Animal(name){
+//   this.name=name||"狸狗";
+//   this.arr=[1];
+// }
+// function Child(){
+//   Animal.call(this)//继承属性
+// }
+// Child.__proto__=new Animal();
+// console.log(".....",Child.constructor);
+// Function.prototype.xxx="....";//构造函数的__proto__指向Function的prototype
+// Object.prototype. xxx="====";//构造函数的prototype的__proto__指向Object的prototype
+// Child.prototype=Object.create(Animal.prototype);//创建一个中间对象 继承方法 
+// //解决了constructor指向父类 分不清实例是由子类创建还是父类 子类和父类原型对象的隔离
+// Child.prototype.constructor=Child;//修复constructor指向
+// var c1=new Child();
+// var c2=new Child();
+// c1.arr.push(2);
+// console.log(c1,c2)
+
+//11.
+// function Parent() {
+//   this.a = 1;
+//   this.b = [1, 2, this.a];
+//   this.c = { demo: 5 };
+//   this.show = function () {
+//     console.log(this.a, this.b, this.c.demo);
+//   }
+// }
+// function Child() {
+//   this.a = 2;
+//   this.change = function () {
+//     this.b.push(this.a);
+//     this.a = this.b.length;
+//     this.c.demo = this.a++;
+//     console.log("b.length",this.b.length,"a++",this.c.demo)
+//   }
+// }
+// Child.prototype = new Parent();
+// var parent = new Parent();
+// var child1 = new Child();
+// var child2 = new Child();
+// child1.a = 11;
+// child2.a = 12;
+// parent.show();//1 [1,2,1] 5
+// child1.show();//11 [1,2,1] 5  show中的this指向Parent
+// child2.show();//12 [1,2,1] 5
+// child1.change();//b: [1,2,1,11]  a:4   c:5
+// child2.change();//b: [1,2,1,11,12]  a:5   c:6
+// parent.show();//1 [1,2,1,5]  5   
+// child1.show();//1 [1,2,1,11,12]  5
+// child2.show();//1 [1,2,1,11,12]  5
+
+//12.
+// var F = function () {}
+// Object.prototype.a = function () {}
+// Function.prototype.b = function () {}
+
+// var f = new F();
+// console.log("f",f);
+// console.log("F",F.__proto__===Function.prototype)
+//13.数组去重
+// var arr = ([1, [1, 2, 3, ["1", "2", "6",["1", "4", "3",["6", "2", "3"]]], 4], 5, 6]).flat(5);
+// console.log("----", arr);
+// var arr2 = [];
+// for (var a = 0; a < arr.length; a++) {
+//   for(var b=1;b<arr.length-1;b++){
+//     if (arr[a] != arr[b]) {
+//       console.log("a",arr[a],"a+1",arr[b],arr[a] != arr[b]);
+//       arr2.push(arr[a]);
+//     }
+//   }
+// }
+// // function FOR(arr){
+// //   for()
+// // }
+// console.log("arr2","2"!="2");
+
+
+//14.call
+Function.prototype.mycall = function (context) {
+    if (typeof this != 'function') {
+        throw new TypeError("no function");
+    }
+    //context为第一个传入的参数obj   this为调用mycall函数的对象
+    context = context || window;//如果context是undefined则为window
+    context.fn = this;//把add函数添加到obj对象上   这样add内的this就指向obj
+    var arg = [...arguments].slice(1);//用es6的剩余运算符把arguments伪数组转为真数组，
+    //并截取除了第一个对象之后的参数
+    //因为伪数组不能调用数组的方法
+    var result = context.fn(...arg); //这里就等于obj.add(6,1)
+    //用一个变量保存执行add函数后的结果
+    delete context.fn;          //因为这个fn对象并没有用所以删除
+    return result;
 }
-Animal.prototype={
-  sayName:function(word){
-    console.log(this,word);
-  }
+var obj = {
+    a: 1,
+    b: 3
 }
-var dog=new Animal("狗狗");
-var cat=new Animal("猫猫");
-dog.name="旺旺"
-console.log("dog",dog.__proto__);
-console.log("dog",dog.__proto__);
-// Animal("猫猫").sayName();//this指向全局 name为undefined
+function add(c, d) {
+    console.log("[...arguments]", [...arguments])
+    console.log("add结果", this.a + this.b + c + d);
+}
+add.mycall(obj, 6, 1);
+
+//12.apply
+// Function.prototype.myapply=function(context){
+//     if(typeof this!="function"){
+//         throw new TypeError("no function");
+//     }
+//     context=context||window;
+//     context.fn=this;
+    // var arg=arguments[1];
+    // var result;
+    //     if(arg){
+    //         result=context.fn(arg);
+    //     }else{
+    //         result=context.fn();
+    //     }
+//     delete context.fn;
+//     return result;
+// }
+// var obj = {
+//     a: 1,
+//     b: 3
+// }
+// function add(arr) {
+//     console.log("arguments",[...arguments])
+//     console.log("add结果",this.a + this.b + arr[0] +arr[1]);
+// }
+// add.myapply(obj,[9,7])
