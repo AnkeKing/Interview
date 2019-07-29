@@ -226,45 +226,45 @@
 
 
 //14.call
-Function.prototype.mycall = function (context) {
-    if (typeof this != 'function') {
-        throw new TypeError("no function");
-    }
-    //context为第一个传入的参数obj   this为调用mycall函数的对象
-    context = context || window;//如果context是undefined则为window
-    context.fn = this;//把add函数添加到obj对象上   这样add内的this就指向obj
-    var arg = [...arguments].slice(1);//用es6的剩余运算符把arguments伪数组转为真数组，
-    //并截取除了第一个对象之后的参数
-    //因为伪数组不能调用数组的方法
-    var result = context.fn(...arg); //这里就等于obj.add(6,1)
-    //用一个变量保存执行add函数后的结果
-    delete context.fn;          //因为这个fn对象并没有用所以删除
-    return result;
-}
-var obj = {
-    a: 1,
-    b: 3
-}
-function add(c, d) {
-    console.log("[...arguments]", [...arguments])
-    console.log("add结果", this.a + this.b + c + d);
-}
-add.mycall(obj, 6, 1);
+// Function.prototype.mycall = function (context) {
+//     if (typeof this != 'function') {
+//         throw new TypeError("no function");
+//     }
+//     //context为第一个传入的参数obj   this为调用mycall函数的对象
+//     context = context || window;//如果context是undefined则为window
+//     context.fn = this;//把add函数添加到obj对象上   这样add内的this就指向obj
+//     var arg = [...arguments].slice(1);//用es6的剩余运算符把arguments伪数组转为真数组，
+//     //并截取除了第一个对象之后的参数
+//     //因为伪数组不能调用数组的方法
+//     var result = context.fn(...arg); //这里就等于obj.add(6,1)
+//     //用一个变量保存执行add函数后的结果
+//     delete context.fn;          //因为这个fn对象并没有用所以删除
+//     return result;
+// }
+// var obj = {
+//     a: 1,
+//     b: 3
+// }
+// function add(c, d) {
+//     console.log("[...arguments]", [...arguments])
+//     console.log("add结果", this.a + this.b + c + d);
+// }
+// add.mycall(obj, 6, 1);
 
-//12.apply
+//15.apply
 // Function.prototype.myapply=function(context){
 //     if(typeof this!="function"){
 //         throw new TypeError("no function");
 //     }
 //     context=context||window;
 //     context.fn=this;
-    // var arg=arguments[1];
-    // var result;
-    //     if(arg){
-    //         result=context.fn(arg);
-    //     }else{
-    //         result=context.fn();
-    //     }
+// var arg=arguments[1];
+// var result;
+//     if(arg){
+//         result=context.fn(arg);
+//     }else{
+//         result=context.fn();
+//     }
 //     delete context.fn;
 //     return result;
 // }
@@ -277,3 +277,103 @@ add.mycall(obj, 6, 1);
 //     console.log("add结果",this.a + this.b + arr[0] +arr[1]);
 // }
 // add.myapply(obj,[9,7])
+//16.bind
+// Function.prototype.mybind = function (context) {
+//     if (typeof this != "function") {
+//         throw new TypeError("no function");
+//     }
+//     context = context || window;
+//     var _this = this;
+//     var arg = [...arguments].slice(1);
+//     return function F() {
+//         if (_this instanceof F) {
+//             return new _this(...arg, ...arguments);
+//         } else {
+//             return _this.apply(context, arg.concat(...arguments))
+//         }
+//     }
+
+// }
+// var obj = {
+//     a: 1,
+//     b: 3
+// }
+// function add(c, d) {
+//     console.log("arguments", [...arguments])
+//     console.log("add结果", this.a + this.b + c + d);
+// }
+// add.mybind(obj, 4)(99);
+//17.instanceof
+// function instanceOf(left,right){
+//     let leftValue=left.__proto__;
+//     let rightValue=right.prototype;
+//     console.log("leftValue",leftValue,"rightValue",rightValue);
+//     while(true){
+//         if(leftValue===null){
+//             return false;
+//         }
+//         if(leftValue===rightValue){
+//             return true
+//         }
+//         leftValue=leftValue.__proto__;
+//     }
+// }
+// function Person(){};
+// var obj=new Person();
+// console.log("结果",instanceOf(obj,Person))
+//18.promise
+// var data=new Promise((resolve,reject)=>{
+//     reject("sucess")
+// }).then(res=>{
+//     console.log("res",res);
+// }).catch(rej=>{
+//     console.log("rej",rej);
+// })
+//17.promise实现红灯绿灯
+// var light=function(timmer,cb){
+//     return new Promise(function(resolve,reject){
+//         setTimeout(function(){
+//             cb();
+//             resolve();
+//         },timmer)
+//     })
+// }
+// var step=function(){
+//     Promise.resolve().then(function(){
+//         return light(3000,red);
+//     }).then(function(){
+//         return light(2000,green);
+//     }).then(function(){
+//         return light(1000,yellow);
+//     }).then(function(){
+//         return step();
+//     })
+// }
+// step();
+// function red(){
+//     console.log("red");
+// }
+// function green(){
+//     console.log("green");
+// }
+// function yellow(){
+//     console.log("yellow");
+// }
+//18.深拷贝
+// function mydeep(obj){
+//     var arr=obj instanceof Array?[]:{}
+//     for(var i in obj){
+//         console.log(i)
+//         if(obj.hasOwnProperty(i)){
+//             arr[i]=typeof obj[i]==="Object"?mydeep(obj[i]):obj[i];
+//         }
+//     }
+//     return arr;
+// }
+// var obj={name:"泽琛",uu:[1,5,2,1]}
+// var newObj=mydeep(obj);
+// console.log(newObj);
+setTimeout(function(){
+    console.log(arguments);
+    // setTimeout(arguments.callee,500)
+},500)
